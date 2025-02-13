@@ -13,6 +13,8 @@
 
     <!-- Tested with versions 0.8.7 to 0.8.12, to no avail -->
     <jacoco.version>0.8.12</jacoco.version>
+
+    <!-- Tested with versions 0.0.20 to 0.0.25, to no avail -->
     <skippy.version>0.0.25</skippy.version>
   </properties>
 
