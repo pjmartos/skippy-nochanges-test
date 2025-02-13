@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.pjmartos</groupId>
+  <artifactId>skippy-nochanges-test</artifactId>
+  <version>1.0-SNAPSHOT</version>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.release>17</maven.compiler.release>
+
+    <!-- Tested with versions 0.8.7 to 0.8.12, to no avail -->
+    <jacoco.version>0.8.12</jacoco.version>
+    <skippy.version>0.0.25</skippy.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.junit</groupId>
+        <artifactId>junit-bom</artifactId>
+        <version>5.11.0</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.skippy</groupId>
+      <artifactId>skippy-junit5</artifactId>
+      <version>${skippy.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.skippy</groupId>
+      <artifactId>skippy-repository-filesystem</artifactId>
+      <version>${skippy.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>io.skippy</groupId>
+        <artifactId>skippy-maven</artifactId>
+        <version>${skippy.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>buildFinished</goal>
+              <goal>buildStarted</goal>
+            </goals>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>io.skippy</groupId>
+            <artifactId>skippy-repository-filesystem</artifactId>
+            <version>${skippy.version}</version>
+          </dependency>
+        </dependencies>
+        <configuration>
+          <repository>io.skippy.extension.FileSystemBackedRepositoryExtension</repository>
+          <coverageForSkippedTests>true</coverageForSkippedTests>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>${jacoco.version}</version>
+        <executions>
+          <execution>
+            <id>agent-for-ut</id>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>merge</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>merge</goal>
+            </goals>
+            <configuration>
+              <fileSets>
+                <fileSet>
+                  <directory>${user.home}/.skippy</directory>
+                  <includes>
+                    <include>*.exec</include>
+                  </includes>
+                </fileSet>
+                <!-- I also tried without the fileSet below, to no avail -->
+                <fileSet>
+                  <directory>${project.build.directory}</directory>
+                  <includes>
+                    <include>skippy.exec</include>
+                  </includes>
+                </fileSet>
+              </fileSets>
+            </configuration>
+          </execution>
+          <execution>
+            <id>report</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
